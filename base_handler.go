@@ -65,7 +65,7 @@ type Serializable interface {
 	Serialize(out Outputable, w http.ResponseWriter, r *http.Request)
 }
 
-// Checks of an Outputable implements Authorizable interface
+// Checks whether an Outputable implements Authorizable interface
 // and returns the Authorizor. Returns nil if it does not.
 func GetAuthorizer(o Outputable) Authorizable {
 	_ = o.(Authorizable)
