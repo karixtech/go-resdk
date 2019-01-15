@@ -45,7 +45,7 @@ type Authenticatable interface {
 type Deserializable interface {
 	// Deserilaizes a request returns an object which should be
 	// an implementation of Inputable.
-	Deserialize(r *http.Request) Inputable
+	Deserialize(r *http.Request) (Inputable, error)
 }
 
 // Manages third phase of the request lifecycle responsible for
@@ -101,6 +101,8 @@ type BaseHandler struct {
 
 	// Error response serializer in case of authentication failure
 	AuthenticationErrorSerializer Serializable
+	// Error response serializer in case of deserialization failure
+	DeserializationErrorSerializer Serializable
 	// Error response serializer in case of validation failure
 	ValidationErrorSerializer Serializable
 	// Error response serializer in case of processing failure
@@ -125,7 +127,11 @@ func (m *BaseHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Deserialize and validate the request
-	in := m.Deserializer.Deserialize(r)
+	in, err := m.Deserializer.Deserialize(r)
+	if err != nil {
+		m.DeserializationErrorSerializer.Serialize(err, w, r)
+		return
+	}
 	verrors := in.Validate()
 	if verrors != nil {
 		m.ValidationErrorSerializer.Serialize(verrors, w, r)

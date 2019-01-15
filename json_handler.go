@@ -24,6 +24,9 @@ func (j *JsonHandler) setDefaults() {
 	if j.SuccessSerializer == nil {
 		j.SuccessSerializer = &JsonSerializer{StatusCode: http.StatusOK}
 	}
+	if j.DeserializationErrorSerializer == nil {
+		j.DeserializationErrorSerializer = &JsonErrorSerializer{StatusCode: http.StatusBadRequest}
+	}
 	if j.ValidationErrorSerializer == nil {
 		j.ValidationErrorSerializer = &JsonErrorSerializer{StatusCode: http.StatusBadRequest}
 	}
